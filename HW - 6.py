@@ -171,7 +171,7 @@ def total_average_hw(students_list, course):
     count = 0
     
     for student in students_list:
-        if course not in student.courses_in_progress:
+        if course not in student.grades.keys():
             continue
         else:
             for grade in student.grades[course]:
@@ -190,7 +190,7 @@ def total_average_grade(lecturers_list, course):
     count = 0
     
     for lecturer in lecturers_list:
-        if course not in lecturer.courses_attached:
+        if course not in lecturer.grades.keys():
             continue
         else:
             for grade in lecturer.grades[course]:
