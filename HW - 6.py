@@ -5,7 +5,7 @@ class Student:
         self.gender = gender
         self.finished_courses = []
         self.courses_in_progress = []
-        self.grades = {} #это словарь с наполнением: курс:оценка
+        self.grades = {} 
 
     def rate_lecture(self, lecturer, course, grade):
         if isinstance(lecturer, Lecturer) and course in self.courses_in_progress and course in lecturer.courses_attached:
@@ -15,9 +15,36 @@ class Student:
                 else:
                     lecturer.grades[course] = [grade]
             else:
-                return "Ошибка"
+                return "Неверный балл"
         else:
             return "Ошибка"
+
+    def _average_grade(self):
+        total = 0
+        counter = 0
+        for value in self.grades.values():
+            for grade in value:
+                total += grade
+                counter += 1
+        average = round(total / counter, 2)
+        return average
+
+    def __str__(self):
+        res =  (
+        f'Имя: {self.name}\n'
+        f'Фамилия: {self.surname}\n'
+        f'Средняя оценка за домашние задания: {self._average_grade()}\n'
+        f'Курсы в процессе изучения: {", ".join(self.courses_in_progress)}\n'
+        f'Завершенные курсы: {", ".join(self.finished_courses)}'
+        )
+        return res
+
+    def __lt__(self, other):
+        if not isinstance(other, Student):
+            print("Некорректное сравнение")
+            return
+        return self._average_grade() < other._average_grade()
+
 
         
 class Mentor:
@@ -31,6 +58,26 @@ class Lecturer(Mentor):
         super().__init__(name, surname)
         self.grades = {}
 
+    def _average_grade(self):
+        total = 0
+        counter = 0
+        for value in self.grades.values():
+            for grade in value:
+                total += grade
+                counter += 1
+        average = round(total / counter, 2)
+        return average
+
+    def __str__(self):
+        res = f'Имя: {self.name}\nФамилия: {self.surname}\nСредняя оценка за лекции: {self._average_grade()}'
+        return res
+
+    def __lt__(self, other):
+        if not isinstance(other, Lecturer):
+            print("Некорректное сравнение")
+            return
+        return self._average_grade() < other._average_grade()
+
 class Reviewer(Mentor):
     def rate_hw(self, student, course, grade):
         if isinstance(student, Student) and course in self.courses_attached and course in student.courses_in_progress:
@@ -40,27 +87,26 @@ class Reviewer(Mentor):
                 student.grades[course] = [grade]
         else:
             return "Ошибка"
- 
-# best_student = Student('Ruoy', 'Eman', 'your_gender')
-# best_student.courses_in_progress += ['Python']
- 
-# cool_mentor = Mentor('Some', 'Buddy')
-# cool_mentor.courses_attached += ['Python']
- 
-# cool_mentor.rate_hw(best_student, 'Python', 10)
-# cool_mentor.rate_hw(best_student, 'Python', 10)
-# cool_mentor.rate_hw(best_student, 'Python', 10)
- 
-# print(best_student.grades)
+
+    def __str__(self):
+        res = f'Имя: {self.name}\nФамилия: {self.surname}'
+        return res
+
+# Создадим преподавателей, студентов, заполним информацию о курсах и о выставленных оценках
 
 vasily_pupkin = Student("Vasily", "Pupkin", "male")
 vasily_pupkin.courses_in_progress += ['Python']
+vasily_pupkin.courses_in_progress += ['Git']
+vasily_pupkin.finished_courses = ['C++']
 
 anna_chicken = Student("Anna", "Chicken", "female")
 anna_chicken.courses_in_progress += ['Java']
+anna_chicken.courses_in_progress += ['Git']
+anna_chicken.finished_courses = ['JS']
 
 alex_ivanov = Lecturer("Alex", "Ivanov")
 alex_ivanov.courses_attached += ['Java']
+alex_ivanov.courses_attached += ['Git']
 
 elena_petrova = Lecturer("Elena", "Petrova")
 elena_petrova.courses_attached += ['Python']
@@ -70,21 +116,44 @@ petr_sidorov.courses_attached += ['Java']
 
 andrey_medvedev = Reviewer("Andrey", "Medvedev")
 andrey_medvedev.courses_attached += ['Python']
+andrey_medvedev.courses_attached += ['Git']
 
-vasily_pupkin.rate_lecture(elena_petrova, "Python", 7)
+vasily_pupkin.rate_lecture(elena_petrova, "Python", 7)  # одну лекцию Елена рассказала лучше
+vasily_pupkin.rate_lecture(elena_petrova, "Python", 6)  # а вторую хуже =((
+vasily_pupkin.rate_lecture(alex_ivanov, "Git", 9)
 
 anna_chicken.rate_lecture(alex_ivanov, "Java", 9)
+anna_chicken.rate_lecture(alex_ivanov, "Java", 10)
+anna_chicken.rate_lecture(alex_ivanov, "Git", 8)
 
 petr_sidorov.rate_hw(anna_chicken, "Java", 2)
+petr_sidorov.rate_hw(anna_chicken, "Java", 1)
+
+andrey_medvedev.rate_hw(vasily_pupkin, "Git", 4)
+andrey_medvedev.rate_hw(anna_chicken, "Git", 3)
 
 andrey_medvedev.rate_hw(vasily_pupkin, "Python", 4)
+andrey_medvedev.rate_hw(vasily_pupkin, "Python", 3)
 
+#Выведем информацию (перечни курсов и оценок выведены для удобства контроля)
 
-print("Курсы, которые ведет Алекс Иванов", alex_ivanov.courses_attached)
-print("Курсы, которые ведет Елена Петрова", elena_petrova.courses_attached)
-print("Оценки, которые получил студент Василий Пупкин", vasily_pupkin.grades)
-print("Оценки, которые получила студентка Анна Чикен", anna_chicken.grades)
-print("Оценки, которые получил лектор Елена Петрова", elena_petrova.grades)
-print("Оценки, которые получил лектор Алекс Иванов", alex_ivanov.grades)
-print()
+print(vasily_pupkin)
+print("Оценки, которые получил студент Василий Пупкин:", vasily_pupkin.grades)
+print(anna_chicken)
+print("Оценки, которые получила студентка Анна Чикен:", anna_chicken.grades)
+
+print(vasily_pupkin < anna_chicken)
+
+print(alex_ivanov)
+print("Курсы, которые ведет Алекс Иванов:", alex_ivanov.courses_attached)
+print("Оценки, которые получил лектор Алекс Иванов:", alex_ivanov.grades)
+
+print(elena_petrova)
+print("Курсы, которые ведет Елена Петрова:", elena_petrova.courses_attached)
+print("Оценки, которые получил лектор Елена Петрова:", elena_petrova.grades)
+
+print(alex_ivanov < elena_petrova)
+
+print(petr_sidorov)
+print(andrey_medvedev)
 
