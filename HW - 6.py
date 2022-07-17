@@ -1,3 +1,5 @@
+###  Задание 1-3
+
 class Student:
     def __init__(self, name, surname, gender):
         self.name = name
@@ -92,6 +94,8 @@ class Reviewer(Mentor):
         res = f'Имя: {self.name}\nФамилия: {self.surname}'
         return res
 
+### Задание 4
+
 # Создадим преподавателей, студентов, заполним информацию о курсах и о выставленных оценках
 
 vasily_pupkin = Student("Vasily", "Pupkin", "male")
@@ -135,7 +139,7 @@ andrey_medvedev.rate_hw(anna_chicken, "Git", 3)
 andrey_medvedev.rate_hw(vasily_pupkin, "Python", 4)
 andrey_medvedev.rate_hw(vasily_pupkin, "Python", 3)
 
-#Выведем информацию (перечни курсов и оценок выведены для удобства контроля)
+#Выведем информацию (списки курсов и словари оценок выведены для удобства и контроля)
 
 print(vasily_pupkin)
 print("Оценки, которые получил студент Василий Пупкин:", vasily_pupkin.grades)
@@ -156,4 +160,47 @@ print(alex_ivanov < elena_petrova)
 
 print(petr_sidorov)
 print(andrey_medvedev)
+
+# Функции
+
+students = [vasily_pupkin, anna_chicken]
+lecturers = [alex_ivanov, elena_petrova]
+
+def total_average_hw(students_list, course):
+    sum_ = 0
+    count = 0
+    
+    for student in students_list:
+        if course not in student.courses_in_progress:
+            continue
+        else:
+            for grade in student.grades[course]:
+                count += 1
+                sum_ += grade
+    result = sum_ / count
+
+    return result
+
+print(total_average_hw(students, "Git"))
+print(total_average_hw(students, "Java"))
+print(total_average_hw(students, "Python"))
+
+def total_average_grade(lecturers_list, course):
+    sum_ = 0
+    count = 0
+    
+    for lecturer in lecturers_list:
+        if course not in lecturer.courses_attached:
+            continue
+        else:
+            for grade in lecturer.grades[course]:
+                count += 1
+                sum_ += grade
+    result = sum_ / count
+
+    return result
+
+print(total_average_grade(lecturers, "Git"))
+print(total_average_grade(lecturers, "Python"))
+print(total_average_grade(lecturers, "Java"))
 
